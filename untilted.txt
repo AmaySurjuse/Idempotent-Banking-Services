@@ -1,0 +1,2 @@
+fsPoxHHu3sx7bDx2
+mongodb+srv://bankT01:fsPoxHHu3sx7bDx2@bankt01.hjoktir.mongodb.net/
