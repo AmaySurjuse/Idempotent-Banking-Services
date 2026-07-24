@@ -3,26 +3,26 @@ import mongoose from "mongoose";
 const transactionSchema = new mongoose.Schema({
     transactiongroupid : {
         type : String,
-        required : [true, "Transaction Group ID is required"], // Fixed: Typo in 'Group'
-        index: true // Added: We will query this field often, so indexing it speeds up the database
+        required : [true, "Transaction Group ID is required"], 
+        index: true 
     },
     accountid : {
         type : mongoose.Schema.Types.ObjectId,
-        ref : 'Account', // Fixed: Mongoose model references are traditionally singular
+        ref : 'Account', 
         required : [true, "Account ID is required"]
     },
     type : {
-        type: String, // Added: Mongoose requires the base data type for enums
+        type: String,
         enum : ['CREDIT', 'DEBIT'],
-        required : [true, "Transaction type is required"] // Added: We absolutely must know if money is going in or out
+        required : [true, "Transaction type is required"] 
     },
     amount :{
         type : Number,
         required : [true, "Amount is required"],
-        min : [0, "Amount cannot be negative"] // Added: A negative debit creates a math nightmare
+        min : [0, "Amount cannot be negative"]
     },
     status : {
-        type: String, // Added: Base data type
+        type: String,
         enum : ['PENDING', 'FAILED', 'SUCCESS'],
         required : [true, "Status is required"]
     },
@@ -31,7 +31,10 @@ const transactionSchema = new mongoose.Schema({
     }
 },{
     timestamps : true,
-    immutable: true // Added: Enterprise ledgers are append-only. This prevents accidental updates to existing transactions.
+    immutable: true 
 })
-const transactionModel = mongoose.model("Transaction ", transactionModel)
+
+
+const transactionModel = mongoose.model("Transaction", transactionSchema)
+
 export default transactionModel;

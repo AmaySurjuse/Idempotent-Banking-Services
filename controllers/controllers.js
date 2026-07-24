@@ -1,16 +1,21 @@
 import mongoose from "mongoose";
 import crypto from "crypto";
 import transaction from "../models/transactionschema.js";
-import account from "../models/accountschema.js"; // 
+import account from "../models/accountschema.js"; 
 import { calculatetruebalance } from "../utils/balancecalculator.js";
 import outbox from "../models/outbox.js";
 
 export const transferfunds = async (req, res) => {
     const { senderaccountid, receiveraccountid, amount, description } = req.body;
-    let attempts = 0;
-    const maxAttempts = 3;
+    
+    if (senderaccountid === receiveraccountid) {
+        return res.status(400).json({ success: false, message: "Cannot transfer funds to the same account" });
+    }
 
-    while (attempts < maxAttempts) {
+    let attempts = 0;
+    const maxattempts = 3;
+
+    while (attempts < maxattempts) {
         const session = await mongoose.startSession();
         session.startTransaction();
 
@@ -50,14 +55,13 @@ export const transferfunds = async (req, res) => {
                 description: description
             }], { session: session });
 
-            // Outbox Entry
             await outbox.create([{
                 eventtype: "transactionSuccess",
-                paylod: {
+                payload: { 
                     txnid: sharedtransactionid,
                     amount: amount,
                     senderid: senderaccountid,
-                    recipentid: receiveraccountid
+                    recipientid: receiveraccountid 
                 },
                 status: 'PENDING'
             }], { session });
@@ -73,7 +77,7 @@ export const transferfunds = async (req, res) => {
 
             if (error.hasErrorLabel && error.hasErrorLabel('TransientTransactionError')) {
                 attempts++;
-                continue; // Retry the loop
+                continue; 
             }
 
             return res.status(500).json({ success: false, message: "Internal server error" });

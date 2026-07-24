@@ -3,6 +3,16 @@ import config from "./config.js";
 
 async function connectdb() {
     try {
+
+        mongoose.connection.on('disconnected', () => {
+            console.log("Connection lost!")
+        })
+
+        mongoose.connection.on('error', (err) => {
+            console.log(" Runtime error: ", err.message)
+        })
+
+
         await mongoose.connect(config.MONGO_URL)
 
         console.log("Connected to Database")

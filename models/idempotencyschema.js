@@ -4,7 +4,7 @@ const idempotencySchema = new mongoose.Schema({
     key : {
         type : String, 
         required : [true, "Key is required"],
-        unique : true // Fixed: Ensures we can instantly find the duplicate
+        unique : true 
     },
     requestmethod : {
         type : String
@@ -16,16 +16,15 @@ const idempotencySchema = new mongoose.Schema({
         type : Number
     },
     responsebody : {
-        type : mongoose.Schema.Types.Mixed // Fixed: Allows saving full JSON objects
+        type : mongoose.Schema.Types.Mixed 
     },
     createdAt: { 
         type: Date, 
         default: Date.now, 
-        expires: 86400 // Added: MongoDB will automatically delete this document after 86,400 seconds (24 hours)
+        expires: 86400 
     }
 })
 
-// Note: No need for { timestamps: true } because we manually defined createdAt for the TTL index.
-const idempotencyModel = mongoose.model("Idempotency ", idempotencyModel)
+const idempotencyModel = mongoose.model("Idempotency", idempotencySchema)
 
 export default idempotencyModel;

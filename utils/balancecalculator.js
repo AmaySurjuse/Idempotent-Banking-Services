@@ -1,13 +1,19 @@
 import mongoose from "mongoose";
-import transaction from "../models/transactionschema.js"; // Added .js extension which is required in Node ES Modules
+import transaction from "../models/transactionschema.js"; 
 
 /* @param {String} accountid
    @returns {Promise<Number>} */
 export async function calculatetruebalance(accountid) {
+    
+    if (!accountid) {
+        return 0;
+    }
+
     const pipeline = [
         {
             $match: {
-                accountid : new mongoose.Types.ObjectId(accountid),
+               
+                accountid : new mongoose.Types.ObjectId(accountid.toString()),
                 status : 'SUCCESS'
             }
         },
@@ -18,7 +24,7 @@ export async function calculatetruebalance(accountid) {
                     $sum : {
                         $cond : [
                             {
-                                $eq : ["$type", "CREDIT"] // Fixed: $eq instead of $ep, and added $ to type
+                                $eq : ["$type", "CREDIT"] 
                             },
                             "$amount",
                             {
@@ -29,9 +35,9 @@ export async function calculatetruebalance(accountid) {
                 }
             }
         }
-    ]; // Fixed: Changed comma to semicolon
+    ]; 
 
-    // Fixed: Corrected spelling of aggregate
+   
     const result = await transaction.aggregate(pipeline); 
 
     if(result.length === 0){

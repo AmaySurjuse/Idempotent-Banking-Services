@@ -4,10 +4,13 @@ import { processoutbox } from "./workers/outboxworker.js"
 
 connectdb()
 
-app.listen( 7001, () => {
-    console.log("Server has started at port : 7001")
+const PORT = process.env.PORT || 7001;
+
+app.listen(PORT, () => {
+    console.log(`Server has started at port : ${PORT}`)
 })
 
+// Starts the mailman worker to check for events every 5 seconds
 setInterval(processoutbox, 5000)
 
 console.log("Outbox worker started")

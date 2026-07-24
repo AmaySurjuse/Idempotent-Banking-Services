@@ -8,8 +8,8 @@ import { calculatetruebalance } from "../utils/balancecalculator.js";
 export const loginuser = async (req, res) => {
     const { email, password, captchaToken } = req.body;
 
-    // 1. CAPTCHA Check
-    if (!captchaToken) {
+    // CAPTCHA Check
+   if (!captchaToken) {
         return res.status(400).json({
             success: false,
             message: "CAPTCHA required"
@@ -44,7 +44,7 @@ export const loginuser = async (req, res) => {
         });
     }
 
-    // 2. The Login Logic 
+     // LOGIN Check 
     try {
         if (!email || !password) {
             return res.status(400).json({
@@ -61,8 +61,8 @@ export const loginuser = async (req, res) => {
             });
         }
 
-        // Fixed: Adjusted to match 'passwordhash' from userschema.js
-        const correctpassword = await bcrypt.compare(password, existuser.passwordhash);
+       
+        const correctpassword = await bcrypt.compare(password, existuser.password);
         if (!correctpassword) {
             return res.status(400).json({
                 success: false,
@@ -71,8 +71,15 @@ export const loginuser = async (req, res) => {
         }
 
         const useraccount = await account.findOne({ userid: existuser._id });
+        
+        
+        if (!useraccount) {
+            return res.status(404).json({
+                success: false,
+                message: "Bank account not found for this user"
+            });
+        }
 
-        // ✅ TARGET 1 KILLED: Calculate the true balance on the fly!
         const currentBalance = await calculatetruebalance(useraccount._id);
 
         const token = jwt.sign(
@@ -93,7 +100,7 @@ export const loginuser = async (req, res) => {
             account: {
                 accountid: useraccount._id,
                 accountnumber: useraccount.accountnumber,
-                // ✅ TARGET 1 KILLED: Send the dynamically calculated balance!
+                
                 balance: currentBalance, 
             }
         });

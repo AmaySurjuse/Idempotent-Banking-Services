@@ -14,9 +14,8 @@ export const idempotencycheck = async (req, res, next) => {
         const existingrequest = await idempotency.findOne({key : idempotencykey})
 
         if(existingrequest){
-            return res.status(existingrequest.responsestatus).json({
-                existingrequest.responsebody
-            })
+
+            return res.status(existingrequest.responsestatus).json(existingrequest.responsebody);
         }
 
         const originaljson = res.json
@@ -25,17 +24,17 @@ export const idempotencycheck = async (req, res, next) => {
             idempotency.create({
                 key : idempotencykey,
                 requestmethod : req.method,
-                requestpath : req.originalurl,
+                requestpath : req.originalUrl, 
                 responsestatus : res.statusCode,
-                responsebody : res.body
+                
+                responsebody : body 
             }).
             catch(err => console.error("failed to save key" , err))
 
-            return originaljson.call(this,body)
+            return originaljson.call(this, body)
         }
 
         next()
-
         
     }
     catch (error) {

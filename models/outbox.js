@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const outboxschema = new mongoose.Schema({
     eventtype: { type: String, required: true },
-    paylod: { type: mongoose.Schema.Types.Mixed, required: true }, // Keeping 'paylod' as per your schema
+    payload: { type: mongoose.Schema.Types.Mixed, required: true }, 
     status: {
         type: String,
         enum: ['PENDING', 'PROCESSING', 'PROCESSED', 'FAILED'],
@@ -12,5 +12,5 @@ const outboxschema = new mongoose.Schema({
     createdAt: { type: Date, default: Date.now }
 });
 
-const Outbox = mongoose.model("Outbox", outboxschema); // Fixed comma to semicolon
+const Outbox = mongoose.model("Outbox", outboxschema); 
 export default Outbox;

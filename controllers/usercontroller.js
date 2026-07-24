@@ -1,7 +1,6 @@
 import mongoose from "mongoose";
 import bcrypt from "bcrypt";
 import user from "../models/userschema.js";
-import jwt from "jsonwebtoken";
 import account from "../models/accountschema.js";
 
 export const registeruser = async (req, res) => {
@@ -15,15 +14,13 @@ export const registeruser = async (req, res) => {
     }
 
     try {
-        // 1. The clean Base URL (No question marks, no variables)
+        
         const googleVerifyUrl = "https://www.google.com/recaptcha/api/siteverify";
 
-        // 2. Pack the keys into a standard URLSearchParams object
         const formData = new URLSearchParams();
         formData.append("secret", process.env.RECAPTCHA_SECRET_KEY);
         formData.append("response", captchaToken);
 
-        // 3. Send the POST request with the keys safely tucked inside the body
         const captchaResponse = await fetch(googleVerifyUrl, {
             method: "POST",
             body: formData 
@@ -46,7 +43,8 @@ export const registeruser = async (req, res) => {
     session.startTransaction();
 
     try{
-        const existuser = await user.findOne({ email });
+        
+        const existuser = await user.findOne({ email }).session(session);
 
         if(existuser){
             await session.abortTransaction();
@@ -109,4 +107,3 @@ export const registeruser = async (req, res) => {
         })
     }
 }
-

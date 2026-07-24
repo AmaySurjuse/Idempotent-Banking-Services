@@ -1,5 +1,4 @@
 import mongoose from "mongoose"
-import crypto from "crypto"
 
 const userSchema = new mongoose.Schema({
   firstname : {
@@ -8,13 +7,15 @@ const userSchema = new mongoose.Schema({
   },
   lastname : {
     type : String,
-    required : [true, "Last Name"]
+    required : [true, "Last Name is required"] 
   },
   email : {
     type : String,
-    required : [true, "Email"],
+    required : [true, "Email is required"],
+    unique : true 
   },
-  passwordhash : {
+
+  password : { 
     type : String,
     required : [true , "Password is Required"]
   },
@@ -36,5 +37,7 @@ const userSchema = new mongoose.Schema({
 {
     timestamps: true
 })
-const userModel = mongoose.model("User", userModel)
+
+const userModel = mongoose.model("User", userSchema)
+
 export default userModel
